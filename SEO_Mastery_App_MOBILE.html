@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SEO Architect App</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Chosen Palette: Mobile App Clean (White/Slate/Teal) -->
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8fafc; /* Slate-50 */
+            color: #1e293b; /* Slate-800 */
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: 90px; /* Space for bottom nav */
+        }
+        
+        /* Hide scrollbar for horizontal nav but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Chart Container Specifics for Mobile */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 250px; /* Mobile friendly height */
+        }
+
+        /* Smooth View Transitions */
+        .view-section {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* App-like Card Styles */
+        .app-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        /* Bottom Nav Active State */
+        .nav-item.active {
+            color: #0d9488; /* Teal-600 */
+        }
+        .nav-item.active svg {
+            fill: #ccfbf1; /* Teal-100 */
+            stroke: #0d9488;
+        }
+
+        /* Checklist Animation */
+        .check-impact {
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .check-impact.visible {
+            max-height: 200px;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top App Bar (Sticky) -->
+    <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-md border-b border-slate-200 z-50 h-14 flex items-center justify-center px-4 shadow-sm">
+        <h1 class="text-lg font-bold text-slate-800 tracking-tight">SEO Architect</h1>
+    </header>
+
+    <!-- Secondary Navigation (Pills) - Only visible in Guide View -->
+    <nav id="pill-nav" class="fixed top-14 left-0 right-0 bg-slate-50 z-40 border-b border-slate-200 py-3 overflow-x-auto no-scrollbar flex items-center gap-2 px-4 shadow-inner">
+        <button onclick="scrollToTopic('fundamentals')" class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-600 active:bg-teal-50 active:text-teal-700 active:border-teal-200 transition-all shadow-sm">Fundamentals</button>
+        <button onclick="scrollToTopic('keywords')" class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-600 active:bg-teal-50 active:text-teal-700 active:border-teal-200 transition-all shadow-sm">Keywords</button>
+        <button onclick="scrollToTopic('onpage')" class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-600 active:bg-teal-50 active:text-teal-700 active:border-teal-200 transition-all shadow-sm">On-Page</button>
+        <button onclick="scrollToTopic('technical')" class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-600 active:bg-teal-50 active:text-teal-700 active:border-teal-200 transition-all shadow-sm">Technical</button>
+        <button onclick="scrollToTopic('performance')" class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-600 active:bg-teal-50 active:text-teal-700 active:border-teal-200 transition-all shadow-sm">Speed</button>
+        <button onclick="scrollToTopic('authority')" class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-600 active:bg-teal-50 active:text-teal-700 active:border-teal-200 transition-all shadow-sm">Authority</button>
+        <button onclick="scrollToTopic('analytics')" class="whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-semibold bg-white border border-slate-200 text-slate-600 active:bg-teal-50 active:text-teal-700 active:border-teal-200 transition-all shadow-sm">Analytics</button>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="pt-32 px-4 max-w-2xl mx-auto">
+        
+        <!-- VIEW 1: STUDY GUIDE -->
+        <div id="view-guide" class="view-section">
+            
+            <!-- Hero Card -->
+            <div class="app-card bg-gradient-to-br from-slate-800 to-slate-900 text-white border-none p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-2">Master SEO</h2>
+                <p class="text-slate-300 text-sm leading-relaxed mb-4">Interactive guide based on CSET489. Learn the mechanics of search.</p>
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="w-2 h-2 rounded-full bg-teal-400"></span> 50 Key Concepts
+                </div>
+            </div>
+
+            <!-- 1. Fundamentals -->
+            <section id="fundamentals" class="mb-12 scroll-mt-32">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="bg-teal-100 text-teal-700 p-1.5 rounded-lg text-sm">&#128269;</span> Fundamentals
+                </h3>
+                
+                <!-- Interactive Process -->
+                <div class="app-card p-4">
+                    <h4 class="font-bold text-sm text-slate-700 mb-3">Search Engine Cycle (Click to Learn)</h4>
+                    <div class="space-y-3">
+                        <div onclick="toggleStep('step1')" class="active:scale-[0.98] transition-transform cursor-pointer bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-sm text-slate-700">1. Crawling</span>
+                                <span class="text-lg">&#128375;</span>
+                            </div>
+                            <p id="step1" class="hidden mt-2 text-xs text-slate-500 border-t border-slate-200 pt-2 leading-relaxed">
+                                <strong>Explanation:</strong> Bots (Spiders) travel via links to find new URLs. <br><strong>Why:</strong> If a bot can't find it, it can't rank it.
+                            </p>
+                        </div>
+                        <div onclick="toggleStep('step2')" class="active:scale-[0.98] transition-transform cursor-pointer bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-sm text-slate-700">2. Indexing</span>
+                                <span class="text-lg">&#128193;</span>
+                            </div>
+                            <p id="step2" class="hidden mt-2 text-xs text-slate-500 border-t border-slate-200 pt-2 leading-relaxed">
+                                <strong>Explanation:</strong> The engine analyzes content and stores it in a massive database. <br><strong>Why:</strong> Only indexed pages are eligible for search results.
+                            </p>
+                        </div>
+                        <div onclick="toggleStep('step3')" class="active:scale-[0.98] transition-transform cursor-pointer bg-slate-50 border border-slate-100 p-3 rounded-xl">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold text-sm text-slate-700">3. Ranking</span>
+                                <span class="text-lg">&#127942;</span>
+                            </div>
+                            <p id="step3" class="hidden mt-2 text-xs text-slate-500 border-t border-slate-200 pt-2 leading-relaxed">
+                                <strong>Explanation:</strong> Algorithms evaluate signals (speed, keywords, links). <br><strong>Why:</strong> The goal is to show the *best* answer first.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hats Interactive -->
+                <h4 class="font-bold text-sm text-slate-700 mb-3 pl-1">Strategies (Click to Reveal Impact)</h4>
+                <div class="grid grid-cols-1 gap-2 mb-4">
+                    <button onclick="toggleStep('hat-white')" class="app-card p-3 text-left bg-green-50 border-green-100 active:scale-[0.98] transition-transform">
+                        <div class="flex justify-between items-center mb-1">
+                            <div class="font-bold text-green-700 text-xs">White Hat</div>
+                            <span class="text-green-600 text-xs">&#9432;</span>
+                        </div>
+                        <div class="text-[10px] text-green-600 leading-tight">Ethical & Safe</div>
+                        <div id="hat-white" class="hidden mt-2 text-[11px] text-green-800 pt-2 border-t border-green-200">
+                            Focuses on user value. Safe from penalties. Slow but sustainable growth.
+                        </div>
+                    </button>
+                    
+                    <button onclick="toggleStep('hat-grey')" class="app-card p-3 text-left bg-gray-50 border-gray-100 active:scale-[0.98] transition-transform">
+                        <div class="flex justify-between items-center mb-1">
+                            <div class="font-bold text-gray-700 text-xs">Grey Hat</div>
+                             <span class="text-gray-600 text-xs">&#9432;</span>
+                        </div>
+                        <div class="text-[10px] text-gray-600 leading-tight">Risky Manipulation</div>
+                         <div id="hat-grey" class="hidden mt-2 text-[11px] text-gray-800 pt-2 border-t border-gray-200">
+                            Technically legal but bends rules (e.g., buying expired domains). High risk.
+                        </div>
+                    </button>
+                    
+                    <button onclick="toggleStep('hat-black')" class="app-card p-3 text-left bg-red-50 border-red-100 active:scale-[0.98] transition-transform">
+                        <div class="flex justify-between items-center mb-1">
+                            <div class="font-bold text-red-700 text-xs">Black Hat</div>
+                             <span class="text-red-600 text-xs">&#9432;</span>
+                        </div>
+                        <div class="text-[10px] text-red-600 leading-tight">Banned Tactics</div>
+                         <div id="hat-black" class="hidden mt-2 text-[11px] text-red-800 pt-2 border-t border-red-200">
+                            Violates guidelines (spam, hacking). Results in total site bans (De-indexing).
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 2. Keywords -->
+            <section id="keywords" class="mb-12 scroll-mt-32">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="bg-indigo-100 text-indigo-700 p-1.5 rounded-lg text-sm">&#128202;</span> Strategy
+                </h3>
+                
+                <div class="app-card p-4">
+                    <h4 class="font-bold text-sm text-slate-700 mb-2">Long Tail Keywords</h4>
+                    <p class="text-xs text-slate-500 mb-4">Specific phrases (Long Tail) have less traffic but convert better than broad terms.</p>
+                    <div class="chart-container">
+                        <canvas id="keywordChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. On-Page -->
+            <section id="onpage" class="mb-12 scroll-mt-32">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="bg-amber-100 text-amber-700 p-1.5 rounded-lg text-sm">&#128196;</span> On-Page
+                </h3>
+                
+                <div class="app-card p-4">
+                    <h4 class="font-bold text-sm text-slate-700 mb-4">Snippet Preview Tool</h4>
+                    <input type="text" id="titleInput" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm mb-3 focus:ring-2 focus:ring-blue-500 outline-none" 
+                           value="Best SEO Guide 2025" oninput="updateSnippet()">
+                    <textarea id="descInput" rows="3" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm mb-4 focus:ring-2 focus:ring-blue-500 outline-none" 
+                              oninput="updateSnippet()">Learn SEO strategies for free. Master keywords and technical skills.</textarea>
+                    
+                    <div class="bg-white border-t border-slate-100 pt-3">
+                        <div class="text-xs text-slate-500 mb-1">Google Preview</div>
+                        <h3 id="previewTitle" class="text-blue-700 text-lg leading-tight mb-1 truncate">Best SEO Guide 2025</h3>
+                        <p id="previewDesc" class="text-xs text-slate-600 leading-snug">Learn <b class="text-slate-900">SEO</b> strategies for free. Master keywords and technical skills.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4. Technical -->
+            <section id="technical" class="mb-12 scroll-mt-32">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="bg-gray-100 text-gray-700 p-1.5 rounded-lg text-sm">&#9881;</span> Technical
+                </h3>
+                <div class="app-card p-0 divide-y divide-slate-100">
+                    <div class="p-4 flex items-center gap-3">
+                        <span class="text-green-500">&#10004;</span>
+                        <div class="text-sm font-medium text-slate-700">Flat Architecture</div>
+                    </div>
+                    <div class="p-4 flex items-center gap-3">
+                        <span class="text-green-500">&#10004;</span>
+                        <div class="text-sm font-medium text-slate-700">HTTPS Security</div>
+                    </div>
+                    <div class="p-4 flex items-center gap-3">
+                        <span class="text-green-500">&#10004;</span>
+                        <div class="text-sm font-medium text-slate-700">XML Sitemaps</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. Performance -->
+            <section id="performance" class="mb-12 scroll-mt-32">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="bg-purple-100 text-purple-700 p-1.5 rounded-lg text-sm">&#9889;</span> Speed (CWV)
+                </h3>
+                
+                <div class="app-card p-4 mb-4">
+                    <h4 class="font-bold text-sm text-slate-700 mb-2 text-center">Web Vitals Weights</h4>
+                    <div class="h-40 relative">
+                        <canvas id="vitalsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="app-card p-4 bg-slate-800 text-white border-none">
+                    <h4 class="font-bold text-sm mb-3">CDN Simulator</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1 opacity-80">
+                                <span>No CDN</span>
+                                <span class="text-red-400">800ms</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2">
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1 opacity-80">
+                                <span>With CDN</span>
+                                <span class="text-green-400">50ms</span>
+                            </div>
+                            <div class="w-full bg-slate-700 rounded-full h-2">
+                                <div class="bg-green-500 h-2 rounded-full" style="width: 15%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="authority" class="mb-12 scroll-mt-32">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-700 p-1.5 rounded-lg text-sm">&#127760;</span> Authority
+                </h3>
+                <div class="app-card p-4">
+                    <p class="text-sm text-slate-600 mb-3">Authority is transferred via links.</p>
+                    <div class="flex justify-center items-center gap-3 p-4 bg-slate-50 rounded-xl">
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center font-bold text-white text-[10px] shadow-sm">High</div>
+                        </div>
+                        <div class="flex-1 h-1 bg-slate-200 relative w-24">
+                            <div class="absolute top-0 left-0 h-full bg-yellow-400 w-full animate-[ping_2s_linear_infinite] opacity-50"></div>
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 rounded-full bg-teal-500 flex items-center justify-center font-bold text-white text-[10px] shadow-sm">You</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+             <section id="analytics" class="mb-24 scroll-mt-32">
+                <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <span class="bg-pink-100 text-pink-700 p-1.5 rounded-lg text-sm">&#128200;</span> Analytics
+                </h3>
+                <div class="app-card p-4">
+                    <div class="h-48 relative">
+                         <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <footer class="text-center text-slate-400 text-xs pb-4">
+                 <p>&copy; 2025 SEO Architect App</p>
+                 <p class="mt-1 font-medium text-slate-500">Developed by AYUSH KUMAR</p>
+            </footer>
+
+        </div> <!-- End Guide View -->
+
+        <!-- VIEW 2: STRATEGY (CHECKLIST) -->
+        <div id="view-strategy" class="view-section hidden">
+             <div class="app-card bg-slate-800 text-white border-none p-6 mb-8">
+                <h2 class="text-2xl font-bold mb-2">Launch Strategy</h2>
+                <div class="flex justify-between items-end">
+                    <p class="text-slate-400 text-sm">Readiness Checklist</p>
+                    <span class="text-2xl font-bold text-teal-400" id="progressText">0%</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2 mt-4">
+                    <div id="progressBar" class="bg-teal-400 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <p class="text-sm text-slate-500 mb-4 px-2">Check items to see their impact:</p>
+
+            <div class="space-y-3">
+                <!-- Item 1 -->
+                <div class="app-card p-0">
+                    <label class="p-4 flex items-center gap-4 cursor-pointer active:bg-slate-50 transition-colors">
+                        <div class="relative flex items-center">
+                            <input type="checkbox" class="peer h-6 w-6 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-teal-500 checked:bg-teal-500 launch-check" onchange="updateProgress(this, 'impact-ssl')">
+                            <span class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </div>
+                        <span class="text-sm font-medium text-slate-700">Install SSL (HTTPS)</span>
+                    </label>
+                    <div id="impact-ssl" class="check-impact bg-teal-50 border-t border-teal-100 px-4 py-0">
+                        <div class="py-3 text-xs text-teal-800">
+                            <strong>Impact:</strong> Encrypts user data. Google boosts rankings for secure sites and removes "Not Secure" warnings.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Item 2 -->
+                <div class="app-card p-0">
+                    <label class="p-4 flex items-center gap-4 cursor-pointer active:bg-slate-50 transition-colors">
+                        <div class="relative flex items-center">
+                            <input type="checkbox" class="peer h-6 w-6 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-teal-500 checked:bg-teal-500 launch-check" onchange="updateProgress(this, 'impact-sitemap')">
+                            <span class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </div>
+                        <span class="text-sm font-medium text-slate-700">Generate Sitemap.xml</span>
+                    </label>
+                    <div id="impact-sitemap" class="check-impact bg-teal-50 border-t border-teal-100 px-4 py-0">
+                        <div class="py-3 text-xs text-teal-800">
+                            <strong>Impact:</strong> Gives Google a map of every page, ensuring faster discovery of new content.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="app-card p-0">
+                    <label class="p-4 flex items-center gap-4 cursor-pointer active:bg-slate-50 transition-colors">
+                        <div class="relative flex items-center">
+                            <input type="checkbox" class="peer h-6 w-6 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-teal-500 checked:bg-teal-500 launch-check" onchange="updateProgress(this, 'impact-robots')">
+                            <span class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </div>
+                        <span class="text-sm font-medium text-slate-700">Configure Robots.txt</span>
+                    </label>
+                    <div id="impact-robots" class="check-impact bg-teal-50 border-t border-teal-100 px-4 py-0">
+                        <div class="py-3 text-xs text-teal-800">
+                            <strong>Impact:</strong> Blocks bots from admin pages, saving your "Crawl Budget" for important content.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="app-card p-0">
+                     <label class="p-4 flex items-center gap-4 cursor-pointer active:bg-slate-50 transition-colors">
+                         <div class="relative flex items-center">
+                            <input type="checkbox" class="peer h-6 w-6 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-teal-500 checked:bg-teal-500 launch-check" onchange="updateProgress(this, 'impact-ga')">
+                            <span class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </div>
+                        <span class="text-sm font-medium text-slate-700">Google Analytics Setup</span>
+                    </label>
+                    <div id="impact-ga" class="check-impact bg-teal-50 border-t border-teal-100 px-4 py-0">
+                        <div class="py-3 text-xs text-teal-800">
+                            <strong>Impact:</strong> Enables tracking of Bounce Rate and Conversions so you can measure ROI.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="app-card p-0">
+                     <label class="p-4 flex items-center gap-4 cursor-pointer active:bg-slate-50 transition-colors">
+                         <div class="relative flex items-center">
+                            <input type="checkbox" class="peer h-6 w-6 cursor-pointer appearance-none rounded-md border border-slate-300 transition-all checked:border-teal-500 checked:bg-teal-500 launch-check" onchange="updateProgress(this, 'impact-kw')">
+                            <span class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 peer-checked:opacity-100">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                            </span>
+                        </div>
+                        <span class="text-sm font-medium text-slate-700">Keyword Research</span>
+                    </label>
+                    <div id="impact-kw" class="check-impact bg-teal-50 border-t border-teal-100 px-4 py-0">
+                        <div class="py-3 text-xs text-teal-800">
+                            <strong>Impact:</strong> Ensures you write content people are actually searching for, preventing wasted effort.
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <footer class="text-center text-slate-400 text-xs mt-12 pb-4">
+                 <p class="font-medium text-slate-500">Developed by AYUSH KUMAR</p>
+            </footer>
+        </div>
+
+        <!-- VIEW 3: Q&A BANK -->
+        <div id="view-qa" class="view-section hidden">
+            <div class="mb-4 sticky top-[60px] z-30 bg-[#f8fafc] pt-2 pb-2">
+                <div class="relative">
+                    <input type="text" id="qaSearch" placeholder="Search 50+ questions..." 
+                           class="w-full bg-white border border-slate-200 rounded-full pl-10 pr-4 py-3 text-sm focus:ring-2 focus:ring-teal-500 outline-none shadow-sm"
+                           oninput="filterQuestions()">
+                    <span class="absolute left-3.5 top-3.5 text-slate-400 text-sm">&#128269;</span>
+                </div>
+            </div>
+
+            <div id="qaList" class="space-y-3 pb-8">
+                <!-- Populated by JS -->
+            </div>
+            <p id="noResults" class="hidden text-center text-slate-500 text-sm mt-8">No results found.</p>
+            
+             <footer class="text-center text-slate-400 text-xs mt-8 pb-4">
+                 <p class="font-medium text-slate-500">Developed by AYUSH KUMAR</p>
+            </footer>
+        </div>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (Fixed) -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 flex justify-around items-center h-16 z-50 pb-safe">
+        <button onclick="switchView('guide')" id="nav-guide" class="nav-item active flex flex-col items-center justify-center w-full h-full text-slate-400 active:scale-95 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <span class="text-[10px] font-medium">Guide</span>
+        </button>
+        
+        <button onclick="switchView('strategy')" id="nav-strategy" class="nav-item flex flex-col items-center justify-center w-full h-full text-slate-400 active:scale-95 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <span class="text-[10px] font-medium">Checklist</span>
+        </button>
+
+        <button onclick="switchView('qa')" id="nav-qa" class="nav-item flex flex-col items-center justify-center w-full h-full text-slate-400 active:scale-95 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-[10px] font-medium">Q&A</span>
+        </button>
+    </nav>
+
+    <script>
+        // --- Navigation Logic ---
+        function switchView(viewName) {
+            document.getElementById('view-guide').classList.add('hidden');
+            document.getElementById('view-strategy').classList.add('hidden');
+            document.getElementById('view-qa').classList.add('hidden');
+            
+            document.getElementById('view-' + viewName).classList.remove('hidden');
+
+            const pillNav = document.getElementById('pill-nav');
+            if (viewName === 'guide') {
+                pillNav.classList.remove('hidden');
+                pillNav.classList.add('flex');
+            } else {
+                pillNav.classList.add('hidden');
+                pillNav.classList.remove('flex');
+            }
+
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('active');
+                el.classList.add('text-slate-400');
+            });
+            const activeBtn = document.getElementById('nav-' + viewName);
+            activeBtn.classList.add('active');
+            activeBtn.classList.remove('text-slate-400');
+
+            window.scrollTo(0,0);
+        }
+
+        function scrollToTopic(id) {
+            const el = document.getElementById(id);
+            const headerOffset = 110; 
+            const elementPosition = el.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+            });
+        }
+
+        function toggleStep(stepId) {
+            const el = document.getElementById(stepId);
+            el.classList.toggle('hidden');
+        }
+
+        // --- Q&A Data (FULL DETAILED VERSION) ---
+        const qaData = [
+            { id: 1, cat: 'Basics', q: "1. Why is SEO critical for businesses?", a: "SEO is critical because it acts as the primary driver of <strong>sustainable, organic traffic</strong>. Unlike paid advertising, which stops generating leads the moment you stop paying, SEO builds long-term visibility. Furthermore, high organic rankings significantly influence <strong>brand trust</strong>; users statistically perceive top organic results as more credible and authoritative than sponsored ads." },
+            { id: 2, cat: 'Basics', q: "2. How do crawlers work?", a: "Crawlers (also known as spiders) discover pages by following hyperlinks from already known URLs to new ones, creating a massive web of connections. Once a page is discovered, the crawler parses the content (text, images, code) and stores it in the search engine's <strong>Index</strong>. Only indexed pages are eligible to be retrieved and ranked when a user performs a search." },
+            { id: 3, cat: 'Basics', q: "3. Organic vs Paid Search?", a: "<strong>Paid Search (PPC):</strong> Listings appear at the top or bottom of SERPs marked as 'Sponsored'. You pay for every click, and visibility vanishes if the budget runs out.<br><br><strong>Organic Search:</strong> Listings earned through relevance, quality, and authority. They are free to click and provide long-term, compounding traffic benefits." },
+            { id: 4, cat: 'Structure', q: "4. Navigations impact on SEO?", a: "Optimized navigation (like clear menus and breadcrumbs) serves two purposes. First, it improves <strong>User Experience (UX)</strong>, allowing visitors to find information quickly and reducing bounce rates. Second, it provides a clear path for <strong>crawlers</strong> to discover and index deep pages that might otherwise be orphaned or ignored." },
+            { id: 5, cat: 'Tech', q: "5. Two factors slowing sites?", a: "<strong>1. Large Images:</strong> High-resolution images consume massive bandwidth. Fix: Compress them and use modern formats like WebP.<br><strong>2. Unoptimized JavaScript:</strong> Excessive scripts block the browser's main thread. Fix: Minify the code and defer or async the loading of non-critical scripts." },
+            { id: 6, cat: 'Keywords', q: "6. What is Keyword Intent?", a: "Keyword intent refers to the <strong>goal</strong> behind a user's search: do they want to buy (Transactional), learn (Informational), or find a specific site (Navigational)? Targeting the correct intent is crucial because even if you rank for a keyword, if your content doesn't match what the user wants, they will bounce, hurting your rankings." },
+            { id: 7, cat: 'Keywords', q: "7. Short vs Long Tail?", a: "<strong>Short-tail:</strong> Broad, 1-2 word phrases (e.g., 'Shoes'). They have high search volume but extremely high competition and low conversion intent.<br><strong>Long-tail:</strong> Specific, 3+ word phrases (e.g., 'Red Nike running shoes size 10'). They have lower volume but much higher conversion rates because the user knows exactly what they want." },
+            { id: 8, cat: 'Keywords', q: "8. What are LSI Keywords?", a: "LSI keywords are conceptually related terms or synonyms (e.g., 'Apple', 'iPhone', 'iOS'). Using them helps search engines understand the <strong>context</strong> and depth of your topic without needing to spam the main keyword ('keyword stuffing')." },
+            { id: 9, cat: 'Algo', q: "9. Impact of Algorithm Updates?", a: "Search engines constantly update their algorithms to refine how they evaluate quality. These updates can cause significant ranking fluctuations. Sites with thin, spammy, or outdated content often see drops, while sites demonstrating strong E-E-A-T (Experience, Expertise, Authority, Trust) are rewarded." },
+            { id: 10, cat: 'Tools', q: "10. Keyword Planner vs Ahrefs?", a: "<strong>Google Keyword Planner:</strong> Best for accurate search volume data directly from Google and estimating ad costs (CPC).<br><strong>Ahrefs/Semrush:</strong> Superior for competitive analysis. They allow you to see exactly what keywords your competitors rank for, their backlink profiles, and 'Content Gap' opportunities." },
+            { id: 11, cat: 'Tech', q: "11. What is Structured Data?", a: "Structured data (often implemented as JSON-LD Schema) is standardized code added to your HTML. It explicitly tells search engines what your content <em>is</em> (e.g., 'This is a Recipe', 'This is an Event'). It helps engines categorize content accurately and is a prerequisite for winning Rich Snippets." },
+            { id: 12, cat: 'OnPage', q: "12. Schema and CTR?", a: "Schema does not directly boost rankings, but it enables <strong>Rich Snippets</strong>—visual enhancements like star ratings, prices, images, or FAQ lists in the search results. These visual cues make your listing stand out from plain text competitors, significantly increasing your Click-Through Rate (CTR)." },
+            { id: 13, cat: 'Tools', q: "13. GSC Visibility Issues?", a: "Google Search Console is the health monitor for your site. It identifies critical technical issues such as <strong>Crawl Errors (5xx)</strong>, broken pages (404s), mobile usability problems, and security penalties." },
+            { id: 14, cat: 'Tools', q: "14. Analytics for SEO?", a: "While GSC tracks visibility, Google Analytics tracks <strong>user behavior</strong>. It helps identify trends by showing metrics like Bounce Rate and Average Session Duration for organic traffic. Crucially, it tracks 'Goal Completions' (conversions), helping you understand which SEO-driven pages are actually generating revenue." },
+            { id: 15, cat: 'OnPage', q: "15. Titles and Descriptions?", a: "<strong>Meta Title:</strong> A major ranking factor. It defines the topic of the page for search engines.<br><strong>Meta Description:</strong> Not a direct ranking factor, but it acts as your 'ad copy'. A compelling description entices users to click, improving CTR." },
+            { id: 16, cat: 'OnPage', q: "16. Image Optimization?", a: "It contributes in two ways. First, using descriptive <strong>Alt Text</strong> allows search engines to 'read' the image, helping it rank in Google Images. Second, compressing images improves page load speed (Core Web Vitals), which is a direct ranking factor." },
+            { id: 17, cat: 'Speed', q: "17. Page Speed and Rank?", a: "There is a direct correlation. Google uses <strong>Core Web Vitals</strong> as a ranking signal, prioritizing fast-loading sites. Indirectly, slow pages frustrate users, leading to high bounce rates and short dwell times, which are negative signals." },
+            { id: 18, cat: 'Strategy', q: "18. On-Page vs Off-Page?", a: "<strong>On-Page:</strong> Everything you can control directly on your website. Examples: Content quality, meta tags, site speed, internal linking.<br><strong>Off-Page:</strong> External signals that build your site's reputation and authority. Examples: Backlinks, social mentions, PR." },
+            { id: 19, cat: 'Tech', q: "19. What is Crawl Budget?", a: "Crawl budget is the number of pages a search engine bot is willing and able to crawl on your site in a given timeframe. For massive websites, optimizing this is critical so bots don't waste time on duplicate content or filters." },
+            { id: 20, cat: 'Tech', q: "20. Canonical Tags?", a: "Canonical tags solve <strong>duplicate content issues</strong>. If a page is accessible via multiple URLs, the canonical tag tells Google: 'Ignore the duplicates, THIS URL is the master version that should be ranked.'" },
+            { id: 21, cat: 'Structure', q: "21. Internal Linking?", a: "Internal links create pathways for crawlers to travel from high-authority pages (like the Homepage) to deeper, newer pages. Without internal links, deep pages become 'Orphan Pages' that crawlers cannot find." },
+            { id: 22, cat: 'Mobile', q: "22. Mobile Responsiveness?", a: "Google uses <strong>Mobile-First Indexing</strong>, meaning it looks at the mobile version of your site to decide where you rank. If your site is not responsive, it will suffer severe ranking penalties." },
+            { id: 23, cat: 'Security', q: "23. Benefits of HTTPS?", a: "<strong>1. Security:</strong> Encrypts data between user and server.<br><strong>2. Rankings:</strong> HTTPS is a confirmed lightweight ranking tie-breaker.<br><strong>3. Trust:</strong> Browsers label non-HTTPS sites as 'Not Secure', scaring away users." },
+            { id: 24, cat: 'UX', q: "24. User Engagement Metrics?", a: "Search engines infer quality from user behavior. High <strong>Dwell Time</strong> (time spent on page) and low <strong>Bounce Rate</strong> suggest the content satisfied the user's intent." },
+            { id: 25, cat: 'Tech', q: "25. Robots.txt vs Sitemap?", a: "<strong>Robots.txt:</strong> A directive file that tells bots where they are allowed or NOT allowed to go. It manages crawl traffic.<br><strong>Sitemap.xml:</strong> An inventory file that lists all the URLs you specifically WANT Google to index." },
+            { id: 26, cat: 'Strategy', q: "26. Fixing Traffic Drops?", a: "1. <strong>Verify:</strong> Check GSC for manual actions or technical errors. <br>2. <strong>Analyze:</strong> Did an algorithm update occur?<br>3. <strong>Audit:</strong> Review content E-E-A-T and remove thin content." },
+            { id: 27, cat: 'Speed', q: "27. Core Web Vitals?", a: "CWV are the definitive UX metrics. <strong>LCP</strong> (Loading) is improved by better hosting/images. <strong>FID/INP</strong> (Interactivity) is improved by reducing JS. <strong>CLS</strong> (Stability) is improved by reserving space for images." },
+            { id: 28, cat: 'Keywords', q: "28. Keyword Gap Analysis?", a: "Identify your top competitors. Use a tool like Semrush to filter for keywords where they rank on Page 1 but you don't. Create content to fill that gap." },
+            { id: 29, cat: 'Video', q: "29. YouTube Optimization?", a: "Place target keywords in the Title and Description. Create high-contrast custom thumbnails to boost CTR. Use timestamps (Chapters) to help Google key moments." },
+            { id: 30, cat: 'Ecommerce', q: "30. Reducing Bounce Rate?", a: "Improve <strong>Page Speed</strong> so users don't wait. Ensure <strong>Product Images</strong> are high quality. Make the price clear immediately. Use trust signals like reviews." },
+            { id: 31, cat: 'OffPage', q: "31. Internal vs Outbound Links?", a: "<strong>Internal Links:</strong> Keep users on your site longer.<br><strong>Outbound Links:</strong> Linking to high-authority, relevant sources builds trust and signals your content is well-researched." },
+            { id: 32, cat: 'Strategy', q: "32. New Site Launch Plan?", a: "<strong>Phase 1:</strong> Keyword Research & Audience mapping.<br><strong>Phase 2:</strong> Technical setup (SSL, Analytics, Sitemap).<br><strong>Phase 3:</strong> Content launch with Pillar Pages.<br><strong>Phase 4:</strong> Link building." },
+            { id: 33, cat: 'Tools', q: "33. AI in SEO?", a: "AI tools accelerate workflow. They can cluster keywords by intent, generate content outlines, suggest title tags, and write schema markup code." },
+            { id: 34, cat: 'Speed', q: "34. Optimizing Heavy Sites?", a: "Implement <strong>Lazy Loading</strong> for images. Use a <strong>CDN</strong> to serve assets globally. Minify CSS/JS files and use browser caching." },
+            { id: 35, cat: 'Strategy', q: "35. White vs Black Hat?", a: "<strong>White Hat:</strong> Follows rules (Quality content, good UX). Sustainable.<br><strong>Black Hat:</strong> Violates rules (Keyword stuffing, hidden text). High risk of banning.<br><strong>Grey Hat:</strong> Borderline manipulation." },
+            { id: 36, cat: 'Content', q: "36. Content Freshness?", a: "Google uses 'Query Deserves Freshness' (QDF). For trending topics, updating content with the latest stats and info is essential to maintain rankings." },
+            { id: 37, cat: 'OffPage', q: "37. Ethical Link Building?", a: "Ethical strategies include <strong>Guest Blogging</strong> on relevant sites, creating <strong>Linkable Assets</strong> (infographics), and <strong>Broken Link Building</strong>." },
+            { id: 38, cat: 'Tools', q: "38. GSC Index Coverage?", a: "Navigate to 'Pages' report. Look for 'Excluded' or 'Error' statuses. Fix Soft 404s (thin content) and actual 404s (broken links)." },
+            { id: 39, cat: 'Audit', q: "39. Audit Checklist?", a: "Check HTTPS status, Mobile usability, Page Speed scores, Indexing errors in GSC, Broken links, and Duplicate title tags." },
+            { id: 40, cat: 'Tech', q: "40. Rich Snippets?", a: "By adding Schema markup, you qualify for visuals like 'Review' stars or 'Product' prices. These occupy more screen space and improve CTR." },
+            { id: 41, cat: 'Video', q: "41. Educational Channel Strategy?", a: "Focus on <strong>Playlists</strong> to increase Session Watch Time. Use clear, keyword-rich titles like 'How to...'. Add accurate closed captions." },
+            { id: 42, cat: 'Content', q: "42. E-E-A-T?", a: "<strong>Experience, Expertise, Authority, Trust.</strong> Non-negotiable for 'Your Money or Your Life' (YMYL) topics to prove credibility." },
+            { id: 43, cat: 'Tools', q: "43. Competitor Analysis?", a: "Tools like Semrush let you see which keywords drive traffic to competitors. You can target those topics and try to create better content." },
+            { id: 44, cat: 'Structure', q: "44. Crawl Depth?", a: "Pages buried deep (4+ clicks from home) are assumed unimportant. A 'Flat Architecture' ensures key pages are within 3 clicks." },
+            { id: 45, cat: 'Tech', q: "45. Handling Server Load?", a: "Sudden spikes can crash servers (5xx errors), causing de-indexing. Use <strong>Caching</strong> (Redis) and a <strong>Load Balancer</strong>." },
+            { id: 46, cat: 'Tech', q: "46. Cloudflare (CDN)?", a: "Cloudflare caches content on servers globally. It reduces <strong>Latency</strong> (improving LCP) and protects against DDoS attacks." },
+            { id: 47, cat: 'OffPage', q: "47. Social Media & SEO?", a: "Social signals aren't a direct factor, but high engagement increases visibility, leading to more traffic and natural backlinks." },
+            { id: 48, cat: 'Strategy', q: "48. Monitoring Plan?", a: "<strong>Weekly:</strong> Check Keyword Rankings & GSC Impressions.<br><strong>Monthly:</strong> Audit Backlink profile & Core Web Vitals.<br><strong>Quarterly:</strong> Full Content Audit." },
+            { id: 49, cat: 'Content', q: "49. Voice/Accessibility?", a: "TTS audio improves <strong>Accessibility</strong> and increases <strong>Dwell Time</strong> (users listening passively), a positive signal." },
+            { id: 50, cat: 'Strategy', q: "50. Large Site Optimization?", a: "Use strict H1-H6 hierarchy, 'Topic Clusters' (Pillar pages), and visuals to break up text. This helps bots parse massive sites efficiently." }
+        ];
+
+        function renderQA(filterText = '') {
+            const list = document.getElementById('qaList');
+            const noRes = document.getElementById('noResults');
+            list.innerHTML = '';
+            
+            const filtered = qaData.filter(item => 
+                item.q.toLowerCase().includes(filterText.toLowerCase()) || 
+                item.a.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            if (filtered.length === 0) {
+                noRes.classList.remove('hidden');
+            } else {
+                noRes.classList.add('hidden');
+            }
+
+            filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'app-card p-4 active:scale-[0.99] transition-transform';
+                div.innerHTML = `
+                    <div class="flex justify-between items-start gap-4 cursor-pointer" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.arrow').classList.toggle('rotate-180')">
+                        <h4 class="text-sm font-semibold text-slate-800 leading-snug">${item.q}</h4>
+                        <span class="arrow transition-transform duration-200 text-teal-500 text-lg">&#x25BE;</span>
+                    </div>
+                    <div class="hidden mt-3 pt-3 border-t border-slate-100 text-sm text-slate-600 leading-relaxed">
+                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 mb-2">${item.cat}</span>
+                        <p>${item.a}</p>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function filterQuestions() {
+            const text = document.getElementById('qaSearch').value;
+            renderQA(text);
+        }
+
+        // --- Charts Initialization ---
+        // Keyword Chart
+        new Chart(document.getElementById('keywordChart').getContext('2d'), {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    { label: 'Short Tail', data: [{x: 90, y: 10}, {x: 85, y: 15}], backgroundColor: '#ef4444' }, // Red
+                    { label: 'Long Tail', data: [{x: 20, y: 80}, {x: 10, y: 90}, {x: 15, y: 85}], backgroundColor: '#3b82f6' } // Blue
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { display: true, labels: { boxWidth: 10 } } },
+                scales: {
+                    x: { title: { display: true, text: 'Volume' }, ticks: { display: false } },
+                    y: { title: { display: true, text: 'Conversion' }, ticks: { display: false } }
+                }
+            }
+        });
+
+        // Vitals Chart
+        new Chart(document.getElementById('vitalsChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['LCP', 'FID', 'CLS'],
+                datasets: [{
+                    data: [40, 30, 30],
+                    backgroundColor: ['#10b981', '#3b82f6', '#f59e0b'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: {size: 10} } } }
+            }
+        });
+
+         // Analytics Chart
+        new Chart(document.getElementById('analyticsChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Health', 'Index', 'User', '$$', 'Rank'],
+                datasets: [
+                    { label: 'GSC', data: [10, 10, 0, 0, 10], backgroundColor: '#eab308' },
+                    { label: 'GA', data: [0, 0, 10, 10, 2], backgroundColor: '#f97316' }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top', labels: { boxWidth: 10 } } },
+                scales: { y: { display: false } }
+            }
+        });
+
+
+        // --- Snippet Logic ---
+        function updateSnippet() {
+            const title = document.getElementById('titleInput').value;
+            const desc = document.getElementById('descInput').value;
+            document.getElementById('previewTitle').innerText = title;
+            const regex = new RegExp(`(SEO)`, 'gi');
+            let styledDesc = desc.replace(regex, '<b class="text-slate-900">$1</b>');
+            if (desc.length > 100) styledDesc = styledDesc.substring(0, 100) + '...';
+            document.getElementById('previewDesc').innerHTML = styledDesc;
+        }
+
+        // --- Progress Logic ---
+        function updateProgress(checkbox, impactId) {
+            // Toggle impact visibility
+            const impactDiv = document.getElementById(impactId);
+            if (checkbox.checked) {
+                impactDiv.classList.add('visible');
+            } else {
+                impactDiv.classList.remove('visible');
+            }
+
+            // Update Progress Bar
+            const checks = document.querySelectorAll('.launch-check');
+            let checkedCount = 0;
+            checks.forEach(c => { if(c.checked) checkedCount++; });
+            const progress = Math.round((checkedCount / checks.length) * 100);
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').innerText = progress + '%';
+        }
+
+        // Init
+        renderQA();
+    </script>
+</body>
+</html>
